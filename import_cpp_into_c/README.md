@@ -1,6 +1,8 @@
 # Import Cpp into C
 如何在C語言當中去調用C++的函數，以下為簡單的C++ source code以及header組成
 
+## Cpp header and source code
+
 ### func.h
 ```cpp
 #ifndef FUNC_H
@@ -26,6 +28,8 @@ int add(int a, int b)
 此時， `func.cpp` 包含的 `add` 函式為C++接口，C中不能直接調用，必須經過一層封裝後才能使用
 
 若是想將C++的庫封裝成C編譯器能夠識別的形式，需要透過增加一個中間層來實現
+
+## C API includes C++ function 
 
 ### func_wrapper.h
 
@@ -71,14 +75,42 @@ int call_cpp_add(int a, int b)
 #endif
 ```
 
-`func_wrapper.cpp` 就是所謂的中間層或是C++與C之間的interface，透過中間層把C++的函式封裝成C可以識別的函式
+`func_wrapper.cpp` 就是所謂的中間層或是C++與C之間的interface，透過C API把C++的函式封裝成C可以識別的函式
+
+## Build code with CMakeLists.txt
+
+### file structure
+
+```bash
+project
+|
+|-- src
+|   |-- func.cpp
+|   |-- func_wrapper.cpp
+|
+|-- include
+|   |-- func.h
+|   |-- func_wrapper.h
+|
+|-- lib
+|   |-- libfunc.so
+|
+|-- CMakeLists.txt
+|-- build
+|
+|-- testing
+|   |-- build
+|   |-- CMakeLists.txt
+|   |-- testing.c
+```
 
 再來利用CMakeLists.txt來編譯程式。首先，先單獨把C++函式庫編譯成動態庫(.so)
+
+### project/CMakeLists.txt
 
 ```cmake
 cmake_minimum_required( VERSION 3.1 )
 project( func )
-
 
 set(install_path ${CMAKE_SOURCE_DIR}/lib)
 message(STATUS "install_path: ${install_path}")
@@ -98,3 +130,43 @@ install (TARGETS ${PROJECT_NAME}
          DESTINATION ${install_path})
 
 ```
+
+在編完之後會在 `project/lib` 當中生成 `libfunc.so` 就是C++的動態庫
+
+再來編譯 `testing.c` 同時引入C++動態庫 `libfunc.so`
+
+### project/testing/CMakeLists.txt
+
+```cmake
+cmake_minimum_required( VERSION 3.1 )
+project( testing )
+
+set(SRC_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/func_wrapper.cpp
+)
+
+# create C API library
+add_library(func_wrapper SHARED ${SRC_FILES})
+
+# find existed C++ library by given path  
+find_library(libfunc func ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
+
+# import C++ library
+target_link_libraries(func_wrapper 
+    PUBLIC  
+        ${libfunc})
+
+target_include_directories(func_wrapper
+  PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include
+)
+
+add_executable(${PROJECT_NAME} testing.c)
+
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    func_wrapper
+)
+```
+
+
