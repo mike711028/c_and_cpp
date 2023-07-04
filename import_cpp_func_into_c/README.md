@@ -217,7 +217,10 @@ c = 34
 ```
 
 ## reference 
-[C++与C之间相互接口和库函数调用](https://blog.csdn.net/gatieme/article/details/52730680)
-[C中調用C++與C++調用C](https://jasonblog.github.io/note/c++/cyu_czhong_de_han_shu_hu_xiang_diao_yong_de_chu_li.html)
-[C 語言中的 extern "C"](https://www.readfog.com/a/1651251482765398016)
-[How to mix C and C++](https://isocpp.org/wiki/faq/mixing-c-and-cpp#call-cpp)
+[[C++与C之间相互接口和库函数调用]](https://blog.csdn.net/gatieme/article/details/52730680)
+
+[[C中調用C++與C++調用C]](https://jasonblog.github.io/note/c++/cyu_czhong_de_han_shu_hu_xiang_diao_yong_de_chu_li.html)
+
+[[C 語言中的 extern "C"]](https://www.readfog.com/a/1651251482765398016)
+
+[[How to mix C and C++]](https://isocpp.org/wiki/faq/mixing-c-and-cpp#call-cpp)
