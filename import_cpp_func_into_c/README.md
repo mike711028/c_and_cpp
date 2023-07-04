@@ -1,4 +1,4 @@
-# Import Cpp into C
+# Import Cpp Function into C
 如何在C語言當中去調用C++的函數，以下為簡單的C++ source code以及header組成
 
 ## Cpp header and source code
