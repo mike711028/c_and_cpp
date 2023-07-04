@@ -14,6 +14,8 @@ int add(int a, int b);
 #endif /* FUNC_H */
 ```
 
+開頭為預處理器指令，防止相同的標頭檔在同一個編譯單元中重複引入
+
 ### func.cpp
 ```cpp
 #include "func.h"
@@ -50,10 +52,11 @@ int call_cpp_add(int a, int b);
 #endif /* FUNC_WRAPPER_H */
 ```
 
-一開始指示詞當中的 `__cplusplus` 是一個C++規範規定的預定義宏，如果
-此段程式被C++所引用的話就會觸發，被C引用則會無視範圍內的宣告
+一開始指示詞當中的 `__cplusplus` 是一個C++規範規定的預定義宏，僅當編譯器被識別為C++編譯器時才觸發
 
-`extern "C"` 的作用則是把範圍內的程式編譯成C編譯器可以識別的代碼
+`extern "C"` 的作用則是把範圍內的程式視為C程式碼，不對函式名稱進行C++的命名修飾(name mangling)
+
+`func_wrapper.h` 提供了C相容的介面，使得C程式碼能夠與被封裝的C++功能進行交互作用
 
 ### func_wrapper.cpp
 
