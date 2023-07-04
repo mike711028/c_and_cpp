@@ -25,3 +25,76 @@ int add(int a, int b)
 
 此時， `func.cpp` 包含的 `add` 函式為C++接口，C中不能直接調用，必須經過一層封裝後才能使用
 
+若是想將C++的庫封裝成C編譯器能夠識別的形式，需要透過增加一個中間層來實現
+
+### func_wrapper.h
+
+```cpp
+#ifndef FUNC_WRAPPER_H
+#define FUNC_WRAPPER_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int call_cpp_add(int a, int b);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* FUNC_WRAPPER_H */
+```
+
+一開始指示詞當中的 `__cplusplus` 是一個C++規範規定的預定義宏，如果
+此段程式被C++所引用的話就會觸發，被C引用則會無視範圍內的宣告
+
+`extern "C"` 的作用則是把範圍內的程式編譯成C編譯器可以識別的代碼
+
+### func_wrapper.cpp
+
+```cpp
+#include "func_wrapper.h"
+#include "func.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int call_cpp_add(int a, int b)
+{
+    return add(a, b);
+}
+
+#ifdef __cplusplus
+}
+#endif
+```
+
+`func_wrapper.cpp` 就是所謂的中間層或是C++與C之間的interface，透過中間層把C++的函式封裝成C可以識別的函式
+
+再來利用CMakeLists.txt來編譯程式。首先，先單獨把C++函式庫編譯成動態庫(.so)
+
+```cmake
+cmake_minimum_required( VERSION 3.1 )
+project( func )
+
+
+set(install_path ${CMAKE_SOURCE_DIR}/lib)
+message(STATUS "install_path: ${install_path}")
+
+set( SRC_FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/func.cpp
+)
+
+add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
+
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+install (TARGETS ${PROJECT_NAME}
+         DESTINATION ${install_path})
+
+```
