@@ -77,7 +77,27 @@ int call_cpp_add(int a, int b)
 
 `func_wrapper.cpp` 就是所謂的中間層或是C++與C之間的interface，透過C API把C++的函式封裝成C可以識別的函式
 
-## Build code with CMakeLists.txt
+### testing.c
+
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include "func_wrapper.h"
+
+int main() {
+
+    printf("hello, world\n");
+
+    int a = 10;
+    int b = 24;
+    int c = call_cpp_add(a, b);
+    printf("c = %d\n", c);
+
+    return 0;
+}
+```
+
+## CMakeLists.txt configuration
 
 ### file structure
 
@@ -169,4 +189,29 @@ target_link_libraries(${PROJECT_NAME}
 )
 ```
 
+## build code and run
 
+1. build C++ shared library
+```bash
+cd project/build
+cmake ..
+make -j8 install
+```
+
+2. build testing
+```bash
+cd project/testing/build
+cmake ..
+make -j8
+```
+3. run code 
+```bash
+cd project/testing/build
+./testing
+```
+
+4. result
+```bash
+hello, world
+c = 34
+```
